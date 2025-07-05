@@ -1,6 +1,7 @@
 import React, { JSX } from 'react';
 import './list.scss';
 import { ICard } from '../../../../common/interfaces/ICard';
+import { Card } from '../Card/Card';
 
 interface ListProps {
   title: string;
@@ -13,10 +14,10 @@ export function List({ title, cards }: ListProps): JSX.Element {
       <h2 className="list__title">{title}</h2>
       <div className="list__cards">
         {cards.map((card) => (
-          <p className="list__card" key={card.id}>
+          <div className="list__card" key={card.id}>
             <div className="list__card-circle"></div>
-            <div className="list__card-title"> {card.title}</div>
-          </p>
+            <Card key={card.id} title={card.title} />
+          </div>
         ))}
         <button className="list__add-card">+ Додати картку</button>
       </div>
