@@ -6,9 +6,7 @@
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "airbnb-typescript",
-    "prettier",
-    "prettier/react",
-    "prettier/@typescript-eslint"
+    "prettier"
   ],
   "parserOptions": {
     "ecmaVersion": 2018,
@@ -60,7 +58,14 @@
     "semi": "error",
     "no-console": "error",
     "react/react-in-jsx-scope": "off",
-    "import/extensions": "off"
+    "import/extensions": "off",
+    "react/self-closing-comp": [
+      "error",
+      {
+        "component": true,
+        "html": false
+      }
+    ]
   },
   "overrides": []
 }

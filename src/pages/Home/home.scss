@@ -1,0 +1,46 @@
+@mixin button-style {
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: bold;
+  font-size: 18px;
+  border: 2px solid black;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 200px;
+  height: 100px;
+  font-style: oblique;
+
+  &:hover {
+    background-color: #c5c5c6;
+  }
+}
+
+.home {
+  height: 100%;
+
+  &__board-link {
+    @include button-style;
+    text-decoration: none;
+    color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__title {
+    text-align: center;
+    font-size: 30px;
+  }
+
+  &__boards {
+    gap: 80px;
+    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(4, 150px);
+  }
+
+  &__add-board {
+    @include button-style;
+    padding-left: 8px;
+  }
+}
