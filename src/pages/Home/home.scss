@@ -1,46 +1,88 @@
-@mixin button-style {
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-weight: bold;
-  font-size: 18px;
-  border: 2px solid black;
-  font-family: Arial, Helvetica, sans-serif;
-  width: 200px;
-  height: 100px;
-  font-style: oblique;
+@import 'src/styles/mixins.scss';
 
-  &:hover {
-    background-color: #c5c5c6;
-  }
+body {
+  background-image: url('../../images/clouds.jpg');
+  background-size: cover;
 }
 
 .home {
   height: 100%;
 
-  &__board-link {
-    @include button-style;
-    text-decoration: none;
-    color: red;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   &__title {
     text-align: center;
-    font-size: 30px;
+    font-size: 40px;
   }
 
   &__boards {
     gap: 80px;
     justify-content: center;
     display: grid;
-    grid-template-columns: repeat(4, 150px);
+    grid-template-columns: repeat(6, 150px);
   }
 
-  &__add-board {
+  &__boardLink {
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  &__addBoard {
     @include button-style;
+    width: 200px;
+    height: 100px;
     padding-left: 8px;
+  }
+}
+
+.modalWindow {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20%;
+  height: auto;
+  background-color: var(--color-modal);
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+
+  &__input,
+  &__selectColor {
+    @include input-style;
+  }
+
+  &__selectColor {
+    width: 134px;
+  }
+
+  &__title {
+    font-size: 20px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 30px 0 30px;
+  }
+
+  &__choiceColor {
+    text-align: left;
+    margin-bottom: 5px;
+    font-family: var(--font-family-primary), serif;
+    font-size: 14px;
+  }
+
+  &__buttonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 100px;
+    margin-bottom: 10px;
+  }
+
+  .buttonCreate,
+  .buttonCLose {
+    @include button-style;
   }
 }

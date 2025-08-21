@@ -52,7 +52,7 @@
     "jsx-a11y/label-has-associated-control": "off",
     "@typescript-eslint/no-explicit-any": 2,
     "import/no-named-as-default": "off",
-    "import/no-named-as-default-member" : "off",
+    "import/no-named-as-default-member": "off",
     "no-alert": "error",
     "eol-last": "error",
     "semi": "error",

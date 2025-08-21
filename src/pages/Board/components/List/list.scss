@@ -1,85 +1,142 @@
-:root {
-  --primary-color: #f4f4f4;
-  --secondary-color: #ffffff;
-  --tertiary-color: #0055cf;
-  --primary-color-hover: #c5c5c6;
-}
-
-@mixin card-style {
-  height: 30px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-}
+@import 'src/styles/variables.scss';
+@import 'src/styles/mixins.scss';
 
 .list {
-  height: 100%;
-  background-color: var(--primary-color);
+  background-color: var(--color-primary);
   padding: 0 16px 16px 16px;
-  border-radius: 8px;
+  border-radius: var(--border-radius-primary);
   width: 250px;
-  border: black solid 1px;
+  border: 1px solid var(--color-text);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-bottom: 300px;
+  height: fit-content;
 
   &__title {
     font-size: 18px;
     font-weight: bold;
     margin-top: 0;
     text-align: left;
-    padding-left: 16px;
+    padding-left: 4px;
     padding-top: 16px;
+    cursor: pointer;
+  }
+
+  &__titleEditing {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 12px;
+    text-align: left;
+    padding-left: 4px;
+    padding-top: 8px;
+    width: fit-content;
+    border-radius: var(--border-radius-secondary);
+  }
+
+  &__titleEditing:focus {
+    border: 2px solid var(--color-tertiary);
+    outline: none;
+  }
+
+  &__deleteList {
+    @include button-style;
+    margin-top: 30px;
+    height: 30px;
+
+    &:hover {
+      color: var(--color-danger);
+    }
   }
 
   &__cards {
-    height: 300px;
+    height: auto;
+  }
+
+  &__deleteCard {
+    background: none;
+    border: none;
+    color: var(--color-dark);
+    font-size: 16px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-danger);
+      font-weight: bold;
+    }
+  }
+
+  &__cardTitle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   &__card {
-    @include card-style;
-    margin-bottom: 16px;
+    height: 30px;
+    border-radius: var(--border-radius-primary);
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 8px;
     margin-top: 8px;
-    background-color: var(--secondary-color);
-    padding-left: 16px;
-    width: 200px;
-    border: 2px solid #e0e0e0;
-    border-bottom: 2px solid var(--primary-color-hover);
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
-    align-items: center;
+    background-color: var(--color-secondary);
+    padding-left: 12px;
+    border: 2px solid var(--color-light);
+    border-bottom: 2px solid var(--color-dark);
     transition: border 0.2s ease;
-
-    &-circle {
-      margin-right: 10px;
-      border-radius: 50%;
-      width: 15px;
-      height: 15px;
-      border: 1px solid black;
-      display: none;
-    }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     &:hover {
-      .list__card-circle {
-        display: block;
-        background-color: var(--tertiary-color);
-      }
-      border: 2px solid var(--tertiary-color);
+      border: 2px solid var(--color-tertiary);
     }
   }
 
-  &__add-card {
-    @include card-style;
+  &__addCardButton {
+    @include button-style;
+    padding: 4px 0 4px 0;
+    margin-top: 10px;
     width: 180px;
     font-weight: bold;
     border: none;
-    background-color: var(--primary-color);
+    background-color: var(--color-primary);
     text-align: left;
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: var(--primary-color-hover);
+      background-color: var(--color-dark);
     }
+  }
+
+  &__addCard {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    background-color: var(--color-primary);
+    border: none;
+  }
+
+  &__inputCardTitle {
+    @include input-style;
+    width: 250px;
+  }
+
+  &__createButton {
+    @include button-style;
+    height: 30px;
+    text-align: center;
+    width: 120px;
+    margin-right: 4px;
+  }
+
+  &__closeButton {
+    @include button-style;
+    height: 30px;
+    width: 30px;
+    background: transparent;
+    border: none;
   }
 }

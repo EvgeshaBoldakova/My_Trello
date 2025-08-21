@@ -1,31 +1,50 @@
-import React, { JSX, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 import './home.scss';
+import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import { IBoard } from 'common/interfaces/IBoard';
+import api from 'api/request';
 import { Board } from './components/Board/Board';
+import { CreateBoard } from './components/CreateBoard/CreateBoard';
 
 export function Home(): JSX.Element {
-  const [boards] = useState([
-    { id: 1, title: 'Покупки', custom: { background: 'red' } },
-    { id: 2, title: 'Підготовка до весілля', custom: { background: 'green' } },
-    { id: 3, title: 'Розробка інтернет-магазину', custom: { background: 'blue' } },
-    { id: 4, title: 'Курс по просуванню у соцмережах', custom: { background: 'pink' } },
-    { id: 5, title: 'Задачі на дачі', custom: { background: 'purple' } },
-    { id: 6, title: 'Ідеї для подарунків батькам', custom: { background: 'yellow' } },
-  ]);
+  const [boards, setBoards] = useState<IBoard[]>([]);
+  const [isModalWindowOpen, setIsModalWindowOpen] = useState(false);
 
-  const componentHome = boards.map((board) => (
-    <Board key={board.id} title={board.title} background={board.custom.background} />
-  ));
+  const handleClick = (): void => {
+    setIsModalWindowOpen(true);
+  };
+
+  const getBoards = async (): Promise<void> => {
+    try {
+      const data: { boards: IBoard[] } = await api.get('/board');
+      setBoards(data.boards);
+    } catch (error) {
+      toast.error('Помилка при отриманні даних про дошки');
+    }
+  };
+
+  useEffect(() => {
+    getBoards();
+  }, []);
+
+  const closeModalWindow = (): void => {
+    setIsModalWindowOpen(false);
+  };
 
   return (
     <div className="home">
       <h2 className="home__title">Мої дошки</h2>
       <div className="home__boards">
-        {componentHome}
-        <Link to="/board" className="home__board-link">
-          Моя тестова дошка
-        </Link>
-        <button className="home__add-board">+ Створити дошку</button>
+        {boards.map((board) => (
+          <Link key={board.id} to={`/board/${board.id}`} className="home__boardLink">
+            <Board title={board.title} background={board.custom.background} />
+          </Link>
+        ))}
+        <button onClick={handleClick} className="home__addBoard">
+          + Створити дошку
+        </button>
+        {isModalWindowOpen && <CreateBoard onCardCreated={getBoards} onCloseModal={closeModalWindow} />}
       </div>
     </div>
   );

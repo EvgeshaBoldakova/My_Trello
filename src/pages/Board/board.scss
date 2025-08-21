@@ -1,45 +1,184 @@
-@mixin button-style {
-  font-size: 16px;
-  font-weight: bold;
-  border: 1px solid black;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  &:hover {
-    background-color: #c5c5c6;
-  }
-}
+@import 'src/styles/mixins.scss';
 
 .board {
   height: 100%;
+  width: 100%;
 
-  &__home-link {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+
+  &__homeLink {
     @include button-style;
-    display: inline-block;
-    margin: 16px;
+    margin: 16px 0;
     padding: 8px 16px;
     background-color: #ffffff;
     color: #0c0c0c;
     text-decoration: none;
   }
 
+  &__deleteBoard {
+    @include button-style;
+    height: 30px;
+
+    &:hover {
+      color: var(--color-danger);
+    }
+  }
+
+  &__container {
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    margin: 0 16px;
+  }
+
+  &__titleContainer {
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    height: 60px;
+    background-color: #9c5271;
+  }
+
+  &__titleEditing {
+    font-size: 24px;
+    color: white;
+    font-weight: bold;
+    width: fit-content;
+    border: solid #0000c8 2px;
+    border-radius: var(--border-radius-secondary);
+    background-color: #9f7093;
+    margin: 16px;
+    padding: 8px;
+  }
+
+  &__titleEditing:focus {
+    border: 2px solid var(--color-tertiary);
+    outline: none;
+  }
+
   &__title {
-    font-size: 30px;
-    margin-bottom: 20px;
-    text-align: center;
+    font-size: 24px;
+    color: white;
+    margin: 16px;
+    padding: 8px;
+    cursor: pointer;
+    width: fit-content;
+    height: fit-content;
+
+    &:hover {
+      background-color: #9f7093;
+      border-radius: var(--border-radius-secondary);
+    }
+  }
+
+  &__ID {
+    margin: 16px;
+    font-size: 14px;
   }
 
   &__lists {
+    padding-top: 20px;
     display: flex;
     gap: 16px;
     overflow-x: auto;
-    justify-content: center;
+    justify-content: start;
+    padding-left: 16px;
   }
 
-  &__add-list {
+  &__addList {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    background-color: #f4f4f4;
+    padding: 16px 16px 16px 16px;
+    border-radius: var(--border-radius-primary);
+    width: 250px;
+    border: black solid 1px;
+    height: fit-content;
+  }
+
+  &__inputListTitle {
+    @include input-style;
+    width: 250px;
+  }
+
+  &__addListTitle {
     @include button-style;
     height: 30px;
     text-align: left;
     width: 250px;
+  }
+
+  &__changeBackground {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+  }
+
+  &__changeColor {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: fit-content;
+    padding: 0;
+    font-style: oblique;
+    font-weight: bold;
+    color: var(--color-info);
+  }
+
+  &__selectColor {
+    @include button-style;
+    width: 100px;
+    margin: 0 10px 0 10px;
+  }
+
+  &__chooseFoto {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: fit-content;
+    height: 25px;
+    font-style: oblique;
+    font-weight: bold;
+    color: var(--color-info);
+  }
+
+  &__selectFoto {
+    @include button-style;
+    margin: 0 10px 0 10px;
+    color: #0c0c0c;
+    background-color: var(--color-secondary);
+    width: 140px;
+    text-align: center;
+  }
+
+
+  &__createButton {
+    @include button-style;
+    height: 30px;
+    text-align: center;
+    width: 120px;
+    margin-right: 4px;
+  }
+
+  &__closeButton {
+    @include button-style;
+    height: 30px;
+    width: 30px;
+    background: transparent;
+    border: none;
   }
 }
