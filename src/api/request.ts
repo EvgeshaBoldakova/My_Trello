@@ -32,7 +32,7 @@ instance.interceptors.response.use(
     } else if (error.request) {
       toast.error('Сервер не відповідає');
     } else {
-      toast.error('Помилка запиту');
+      toast.error('Помилка запиту.');
     }
 
     return Promise.reject(error);
