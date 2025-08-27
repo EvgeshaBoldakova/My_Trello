@@ -1,5 +1,4 @@
 import React, { JSX, useState } from 'react';
-// import api from 'api/request';
 import { ICreateBoardProps } from 'common/interfaces/ICreateBoardProps';
 import { toast } from 'react-toastify';
 import { isValidTitle } from 'utils/validation';
