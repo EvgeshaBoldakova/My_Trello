@@ -3,8 +3,9 @@ import './list.scss';
 import { toast } from 'react-toastify';
 import { ListProps } from 'common/interfaces/IListProps';
 import { useParams } from 'react-router-dom';
-import api from 'api/request';
 import { isValidTitle } from 'utils/validation';
+import { updateListTitle } from 'services/list.service';
+import { createCard, deleteCard, updateCardTitle } from 'services/card.service';
 import { Card } from '../Card/Card';
 
 export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProps): JSX.Element {
@@ -24,7 +25,7 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
   const editingListTitle = async (): Promise<void> => {
     if (!isValidTitle(listTitle)) return;
     try {
-      await api.put(`/board/${boardId}/list/${id}`, { title: listTitle });
+      await updateListTitle(boardId!, listTitle, id);
       toast.success('Назву списку успішно змінено!');
     } catch (error) {
       toast.error('Помилка при редагуванні назви списку');
@@ -33,13 +34,18 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
   };
 
   // Скасування редагування назви списку при натисканні Escape
-  const stopEditingListTitle = async (): Promise<void> => {
-    try {
-      await api.put(`/board/${boardId}/list/${id}`, { title: prevListTitle.current });
-      setListTitle(prevListTitle.current);
-    } catch (error) {
-      toast.error('Помилка');
-    }
+  // const stopEditingListTitle = async (): Promise<void> => {
+  //   try {
+  //     await updateListTitle(boardId, prevListTitle.current, id);
+  //     setListTitle(prevListTitle.current);
+  //   } catch (error) {
+  //     toast.error('Помилка');
+  //   }
+  //   setIsEditing(false);
+  // };
+
+  const stopEditingListTitle = (): void => {
+    setListTitle(prevListTitle.current);
     setIsEditing(false);
   };
 
@@ -53,15 +59,11 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
   };
 
   // Створення картки
-  const createCard = async (): Promise<void> => {
+  const handleCreateCard = async (): Promise<void> => {
     if (!isValidTitle(cardTitle)) return;
 
     try {
-      await api.post(`/board/${boardId}/card`, {
-        title: cardTitle,
-        list_id: id,
-        position: cards.length,
-      });
+      await createCard(boardId!, id, cardTitle, cards.length);
       onCardCreated();
       setCardTitle('');
       setIsButtonPressed(false);
@@ -72,9 +74,9 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
   };
 
   // Видалення картки
-  const deleteCard = async (cardId: number): Promise<void> => {
+  const handleDeleteCard = async (cardId: number): Promise<void> => {
     try {
-      await api.delete(`/board/${boardId}/card/${cardId}`);
+      await deleteCard(boardId!, cardId);
       onCardCreated();
       toast.success('Картку успішно видалено!');
     } catch (error) {
@@ -86,11 +88,7 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
   const editingCardTitle = async (cardId: number, newCardTitle: string, description: string): Promise<void> => {
     if (!isValidTitle(newCardTitle)) return;
     try {
-      await api.put(`/board/${boardId}/card/${cardId}`, {
-        title: newCardTitle,
-        description,
-        list_id: id,
-      });
+      await updateCardTitle(boardId!, cardId, id, newCardTitle, description);
       onCardCreated();
       toast.success('Назву картки успішно змінено!');
     } catch (error) {
@@ -139,7 +137,7 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
                 description={card.description}
               />
             </div>
-            <button className="list__deleteCard" onClick={() => deleteCard(card.id)}>
+            <button className="list__deleteCard" onClick={() => handleDeleteCard(card.id)}>
               ✕
             </button>
           </div>
@@ -157,7 +155,7 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
               onChange={(e) => setCardTitle(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  createCard();
+                  handleCreateCard();
                 }
                 if (e.key === 'Escape') {
                   stopAddCard();
@@ -166,7 +164,7 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
             />
 
             <div className="list__addButtonContainer">
-              <button onClick={createCard} className="list__createButton">
+              <button onClick={handleCreateCard} className="list__createButton">
                 Створити
               </button>
               <button onClick={stopAddCard} className="list__closeButton">

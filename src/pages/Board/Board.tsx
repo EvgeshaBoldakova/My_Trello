@@ -2,10 +2,10 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import React, { JSX, useEffect, useRef, useState } from 'react';
 import './board.scss';
 import { toast } from 'react-toastify';
-import api from 'api/request';
-import { IBoard } from 'common/interfaces/IBoard';
 import { IList } from 'common/interfaces/IList';
 import { isValidTitle } from 'utils/validation';
+import { deleteBoard, getBoard, updateBoardBackground, updateBoardTitle } from 'services/board.service';
+import { createList, deleteList, getLists } from 'services/list.service';
 import { List } from './components/List/List';
 
 export function Board(): JSX.Element {
@@ -21,22 +21,22 @@ export function Board(): JSX.Element {
   const prevTitle = useRef('');
 
   useEffect(() => {
-    const getBoard = async (): Promise<void> => {
+    const fetchBoard = async (): Promise<void> => {
       try {
-        const response: IBoard = await api.get(`/board/${boardId}`);
+        const response = await getBoard(boardId);
         setTitle(response.title);
         setBackground(response.custom.background);
       } catch (error) {
         toast.error('Помилка при отриманні даних дошки');
       }
     };
-    getBoard();
+    fetchBoard();
   }, [boardId]);
 
   // Видалення дошки та повернення на головну сторінку
-  const deleteBoard = async (): Promise<void> => {
+  const handleDeleteBoard = async (): Promise<void> => {
     try {
-      await api.delete(`/board/${boardId}`);
+      await deleteBoard(boardId);
       navigate('/');
       toast.success('Дошку успішно видалено!');
     } catch (error) {
@@ -53,8 +53,8 @@ export function Board(): JSX.Element {
   const titleEditing = async (): Promise<void> => {
     if (!isValidTitle(title)) return;
     try {
-      await api.put(`/board/${boardId}`, { title });
-      const response: IBoard = await api.get(`/board/${boardId}`);
+      await updateBoardTitle(boardId, title);
+      const response = await getBoard(boardId);
       setTitle(response.title);
       toast.success('Назву дошки успішно змінено!');
     } catch (error) {
@@ -64,29 +64,22 @@ export function Board(): JSX.Element {
   };
 
   // Скасування редагування назви дошки при натисканні Escape
-  const stopTitleEditing = async (): Promise<void> => {
-    try {
-      await api.put(`/board/${boardId}`, { title: prevTitle.current });
-      await api.get(`/board/${boardId}`);
-      setTitle(prevTitle.current);
-    } catch (error) {
-      toast.error('Помилка');
-    }
+  const stopTitleEditing = (): void => {
+    setTitle(prevTitle.current);
     setIsEditing(false);
   };
 
-  // Отримання даних про списки
-  const getLists = async (): Promise<void> => {
+  const fetchLists = async (): Promise<void> => {
     try {
-      const data: { lists: IList[] } = await api.get(`/board/${boardId}`);
-      setLists(data.lists);
+      const data = await getLists(boardId!);
+      setLists(data);
     } catch (error) {
       toast.error('Помилка при отриманні даних про списки');
     }
   };
 
   useEffect(() => {
-    getLists();
+    fetchLists();
   }, []);
 
   const handleClick = (): void => {
@@ -99,16 +92,12 @@ export function Board(): JSX.Element {
   };
 
   // Створення списку
-  const createList = async (): Promise<void> => {
+  const handleCreateList = async (): Promise<void> => {
     if (!isValidTitle(listTitle)) return;
 
     try {
-      await api.post(`/board/${boardId}/list`, {
-        boardId,
-        title: listTitle,
-        position: lists.length,
-      });
-      getLists();
+      await createList(boardId!, listTitle, lists.length);
+      await fetchLists();
       setListTitle('');
       setIsButtonPressed(false);
       toast.success('Список успішно створено!');
@@ -118,11 +107,12 @@ export function Board(): JSX.Element {
   };
 
   // Видалення списку
-  const deleteList = async (id: number): Promise<void> => {
+  const handleDeleteList = async (id: number): Promise<void> => {
+    if (!boardId) return;
     try {
-      await api.delete(`/board/${boardId}/list/${id}`);
+      await deleteList(boardId, id);
+      await fetchLists();
       toast.success('Список успішно видалено!');
-      getLists();
     } catch (error) {
       toast.error('Помилка при видаленні списку');
     }
@@ -132,7 +122,7 @@ export function Board(): JSX.Element {
   const changeBackground = async (newBackground: string): Promise<void> => {
     try {
       setBackground(newBackground);
-      await api.put(`/board/${boardId}`, { custom: { background: newBackground } });
+      await updateBoardBackground(boardId, newBackground);
       toast.success('Фон дошки успішно змінено!');
     } catch (error) {
       toast.error('Помилка при зміні фону дошки');
@@ -147,7 +137,7 @@ export function Board(): JSX.Element {
       const newBackground = reader.result as string;
       setBackground(newBackground);
       try {
-        await api.put(`/board/${boardId}`, { custom: { background: newBackground } });
+        await updateBoardBackground(boardId, newBackground);
         toast.success('Фон дошки успішно змінено!');
       } catch (error) {
         toast.error('Помилка при зміні фону дошки');
@@ -191,7 +181,7 @@ export function Board(): JSX.Element {
           </div>
         </div>
 
-        <button onClick={deleteBoard} className="board__deleteBoard">
+        <button onClick={handleDeleteBoard} className="board__deleteBoard">
           Видалити дошку
         </button>
       </div>
@@ -248,8 +238,8 @@ export function Board(): JSX.Element {
               id={list.id}
               title={list.title}
               cards={list.cards}
-              onDeleteList={deleteList}
-              onCardCreated={getLists}
+              onDeleteList={handleDeleteList}
+              onCardCreated={fetchLists}
             />
           ))}
           {isButtonPressed && (
@@ -264,7 +254,7 @@ export function Board(): JSX.Element {
                 onChange={(e) => setListTitle(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    createList();
+                    handleCreateList();
                   }
                   if (e.key === 'Escape') {
                     stopCreateList();
@@ -272,7 +262,7 @@ export function Board(): JSX.Element {
                 }}
               />
               <div className="board__addButtonContainer">
-                <button onClick={createList} className="board__createButton">
+                <button onClick={handleCreateList} className="board__createButton">
                   Створити
                 </button>
                 <button onClick={stopCreateList} className="board__closeButton">

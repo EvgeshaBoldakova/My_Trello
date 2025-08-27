@@ -1,4 +1,4 @@
 export interface ICreateBoardProps {
-  onCardCreated: () => void;
   onCloseModal: () => void;
+  onCardCreated: () => Promise<void>;
 }

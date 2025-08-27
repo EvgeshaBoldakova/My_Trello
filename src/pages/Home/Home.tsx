@@ -3,7 +3,7 @@ import './home.scss';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { IBoard } from 'common/interfaces/IBoard';
-import api from 'api/request';
+import { getBoards } from 'services/board.service';
 import { Board } from './components/Board/Board';
 import { CreateBoard } from './components/CreateBoard/CreateBoard';
 
@@ -15,17 +15,17 @@ export function Home(): JSX.Element {
     setIsModalWindowOpen(true);
   };
 
-  const getBoards = async (): Promise<void> => {
+  const fetchBoards = async (): Promise<void> => {
     try {
-      const data: { boards: IBoard[] } = await api.get('/board');
-      setBoards(data.boards);
+      const data = await getBoards();
+      setBoards(data);
     } catch (error) {
       toast.error('Помилка при отриманні даних про дошки');
     }
   };
 
   useEffect(() => {
-    getBoards();
+    fetchBoards();
   }, []);
 
   const closeModalWindow = (): void => {
@@ -44,7 +44,7 @@ export function Home(): JSX.Element {
         <button onClick={handleClick} className="home__addBoard">
           + Створити дошку
         </button>
-        {isModalWindowOpen && <CreateBoard onCardCreated={getBoards} onCloseModal={closeModalWindow} />}
+        {isModalWindowOpen && <CreateBoard onCardCreated={fetchBoards} onCloseModal={closeModalWindow} />}
       </div>
     </div>
   );

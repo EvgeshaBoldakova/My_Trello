@@ -1,8 +1,9 @@
 import React, { JSX, useState } from 'react';
-import api from 'api/request';
+// import api from 'api/request';
 import { ICreateBoardProps } from 'common/interfaces/ICreateBoardProps';
 import { toast } from 'react-toastify';
 import { isValidTitle } from 'utils/validation';
+import { createBoard } from 'services/board.service';
 
 export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps): JSX.Element {
   const [title, setTitle] = useState('');
@@ -14,13 +15,12 @@ export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps):
     onCloseModal();
   };
 
-  // Створення дошки
-  const createBoard = async (): Promise<void> => {
+  const handleCreateBoard = async (): Promise<void> => {
     if (!isValidTitle(title)) return;
 
     try {
-      await api.post('/board', { title, custom: { background } });
-      onCardCreated();
+      await createBoard(title, background);
+      await onCardCreated();
       clearAndCloseModalWindow();
       toast.success('Дошку успішно створено!');
     } catch (error) {
@@ -42,7 +42,7 @@ export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps):
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              createBoard();
+              handleCreateBoard();
             }
             if (e.key === 'Escape') {
               clearAndCloseModalWindow();
@@ -58,7 +58,7 @@ export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps):
           onChange={(e) => setBackground(e.target.value)}
         />
         <div className="modalWindow__buttonContainer">
-          <button className="buttonCreate" onClick={createBoard}>
+          <button className="buttonCreate" onClick={handleCreateBoard}>
             Створити
           </button>
           <button className="buttonCLose" onClick={clearAndCloseModalWindow}>
