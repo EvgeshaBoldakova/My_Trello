@@ -1,7 +1,7 @@
 @import 'src/styles/mixins.scss';
 
 body {
-  background-image: url('../../images/clouds.jpg');
+  background-image: url('../../../public/images/clouds.jpg');
   background-size: cover;
 }
 
@@ -14,10 +14,10 @@ body {
   }
 
   &__boards {
-    gap: 80px;
+    gap: 40px;
     justify-content: center;
     display: grid;
-    grid-template-columns: repeat(6, 150px);
+    grid-template-columns: repeat(6, 200px);
   }
 
   &__boardLink {

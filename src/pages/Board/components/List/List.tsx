@@ -1,12 +1,12 @@
 import React, { JSX, useRef, useState } from 'react';
 import './list.scss';
-import { toast } from 'react-toastify';
 import { ListProps } from 'common/interfaces/IListProps';
 import { useParams } from 'react-router-dom';
 import { isValidTitle } from 'utils/validation';
 import { updateListTitle } from 'services/list.service';
 import { createCard, deleteCard, updateCardTitle } from 'services/card.service';
 import { Card } from '../Card/Card';
+import { handleRequest } from '../../../../utils/handleRequest';
 
 export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProps): JSX.Element {
   const [isEditing, setIsEditing] = useState(false);
@@ -24,26 +24,15 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
 
   const editingListTitle = async (): Promise<void> => {
     if (!isValidTitle(listTitle)) return;
-    try {
-      await updateListTitle(boardId!, listTitle, id);
-      toast.success('Назву списку успішно змінено!');
-    } catch (error) {
-      toast.error('Помилка при редагуванні назви списку');
-    }
+    await handleRequest(
+      (): Promise<void> => updateListTitle(boardId!, listTitle, id),
+      'Назву списку успішно змінено!',
+      'Помилка при редагуванні назви списку'
+    );
     setIsEditing(false);
   };
 
   // Скасування редагування назви списку при натисканні Escape
-  // const stopEditingListTitle = async (): Promise<void> => {
-  //   try {
-  //     await updateListTitle(boardId, prevListTitle.current, id);
-  //     setListTitle(prevListTitle.current);
-  //   } catch (error) {
-  //     toast.error('Помилка');
-  //   }
-  //   setIsEditing(false);
-  // };
-
   const stopEditingListTitle = (): void => {
     setListTitle(prevListTitle.current);
     setIsEditing(false);
@@ -61,38 +50,40 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
   // Створення картки
   const handleCreateCard = async (): Promise<void> => {
     if (!isValidTitle(cardTitle)) return;
-
-    try {
-      await createCard(boardId!, id, cardTitle, cards.length);
+    const result = await handleRequest(
+      (): Promise<void> => createCard(boardId!, id, cardTitle, cards.length),
+      'Картку успішно додано!',
+      'Помилка при створенні картки'
+    );
+    if (result !== undefined) {
       onCardCreated();
       setCardTitle('');
       setIsButtonPressed(false);
-      toast.success('Картку успішно додано!');
-    } catch (err) {
-      toast.error('Помилка при створенні картки');
     }
   };
 
   // Видалення картки
   const handleDeleteCard = async (cardId: number): Promise<void> => {
-    try {
-      await deleteCard(boardId!, cardId);
+    const result = await handleRequest(
+      (): Promise<void> => deleteCard(boardId!, cardId),
+      'Картку успішно видалено!',
+      'Помилка при видаленні картки'
+    );
+    if (result !== undefined) {
       onCardCreated();
-      toast.success('Картку успішно видалено!');
-    } catch (error) {
-      toast.error('Помилка при видаленні картки');
     }
   };
 
   // Редагування назви картки
   const editingCardTitle = async (cardId: number, newCardTitle: string, description: string): Promise<void> => {
     if (!isValidTitle(newCardTitle)) return;
-    try {
-      await updateCardTitle(boardId!, cardId, id, newCardTitle, description);
+    const result = await handleRequest(
+      (): Promise<void> => updateCardTitle(boardId!, cardId, id, newCardTitle, description),
+      'Назву картки успішно змінено!',
+      'Помилка при редагуванні назви картки'
+    );
+    if (result !== undefined) {
       onCardCreated();
-      toast.success('Назву картки успішно змінено!');
-    } catch (error) {
-      toast.error('Помилка при редагуванні назви картки');
     }
   };
 

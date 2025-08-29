@@ -1,8 +1,9 @@
 import React, { JSX, useState } from 'react';
 import { ICreateBoardProps } from 'common/interfaces/ICreateBoardProps';
-import { toast } from 'react-toastify';
 import { isValidTitle } from 'utils/validation';
 import { createBoard } from 'services/board.service';
+import { handleRequest } from 'utils/handleRequest';
+import { IBoard } from 'common/interfaces/IBoard';
 
 export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps): JSX.Element {
   const [title, setTitle] = useState('');
@@ -16,14 +17,14 @@ export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps):
 
   const handleCreateBoard = async (): Promise<void> => {
     if (!isValidTitle(title)) return;
-
-    try {
-      await createBoard(title, background);
+    const result = await handleRequest(
+      (): Promise<IBoard> => createBoard(title, background),
+      'Дошку успішно створено!',
+      'Помилка при створенні дошки'
+    );
+    if (result !== undefined) {
       await onCardCreated();
       clearAndCloseModalWindow();
-      toast.success('Дошку успішно створено!');
-    } catch (error) {
-      toast.error('Помилка при створенні дошки');
     }
   };
 

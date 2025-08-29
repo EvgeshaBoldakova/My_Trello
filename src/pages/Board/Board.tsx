@@ -1,11 +1,13 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import React, { JSX, useEffect, useRef, useState } from 'react';
 import './board.scss';
-import { toast } from 'react-toastify';
 import { IList } from 'common/interfaces/IList';
 import { isValidTitle } from 'utils/validation';
 import { deleteBoard, getBoard, updateBoardBackground, updateBoardTitle } from 'services/board.service';
 import { createList, deleteList, getLists } from 'services/list.service';
+import { handleRequest } from 'utils/handleRequest';
+import { IBoard } from 'common/interfaces/IBoard';
+import { getBackgroundStyle } from 'utils/backgroundStyle';
 import { List } from './components/List/List';
 
 export function Board(): JSX.Element {
@@ -22,12 +24,14 @@ export function Board(): JSX.Element {
 
   useEffect(() => {
     const fetchBoard = async (): Promise<void> => {
-      try {
-        const response = await getBoard(boardId);
-        setTitle(response.title);
-        setBackground(response.custom.background);
-      } catch (error) {
-        toast.error('Помилка при отриманні даних дошки');
+      const result = await handleRequest(
+        (): Promise<IBoard> => getBoard(boardId!),
+        undefined,
+        'Помилка при отриманні даних дошки'
+      );
+      if (result) {
+        setTitle(result.title);
+        setBackground(result.custom.background);
       }
     };
     fetchBoard();
@@ -35,13 +39,12 @@ export function Board(): JSX.Element {
 
   // Видалення дошки та повернення на головну сторінку
   const handleDeleteBoard = async (): Promise<void> => {
-    try {
-      await deleteBoard(boardId);
-      navigate('/');
-      toast.success('Дошку успішно видалено!');
-    } catch (error) {
-      toast.error('Помилка при видаленні дошки');
-    }
+    await handleRequest(
+      (): Promise<void> => deleteBoard(boardId!),
+      'Дошку успішно видалено!',
+      'Помилка при видаленні дошки'
+    );
+    navigate('/');
   };
 
   // Редагування назви дошки
@@ -52,13 +55,14 @@ export function Board(): JSX.Element {
 
   const titleEditing = async (): Promise<void> => {
     if (!isValidTitle(title)) return;
-    try {
-      await updateBoardTitle(boardId, title);
-      const response = await getBoard(boardId);
+    const result = await handleRequest(
+      (): Promise<IBoard> => updateBoardTitle(boardId!, title),
+      'Назву дошки успішно змінено!',
+      'Помилка при редагуванні назви дошки'
+    );
+    if (result) {
+      const response = await getBoard(boardId!);
       setTitle(response.title);
-      toast.success('Назву дошки успішно змінено!');
-    } catch (error) {
-      toast.error('Помилка при редагуванні назви дошки');
     }
     setIsEditing(false);
   };
@@ -70,11 +74,13 @@ export function Board(): JSX.Element {
   };
 
   const fetchLists = async (): Promise<void> => {
-    try {
-      const data = await getLists(boardId!);
-      setLists(data);
-    } catch (error) {
-      toast.error('Помилка при отриманні даних про списки');
+    const result = await handleRequest(
+      (): Promise<IList[]> => getLists(boardId!),
+      undefined,
+      'Помилка при отриманні даних про списки'
+    );
+    if (result) {
+      setLists(result);
     }
   };
 
@@ -94,39 +100,37 @@ export function Board(): JSX.Element {
   // Створення списку
   const handleCreateList = async (): Promise<void> => {
     if (!isValidTitle(listTitle)) return;
-
-    try {
-      await createList(boardId!, listTitle, lists.length);
+    const result = await handleRequest(
+      (): Promise<void> => createList(boardId!, listTitle, lists.length),
+      'Список успішно створено!',
+      'Помилка при створенні списку'
+    );
+    if (result !== undefined) {
       await fetchLists();
       setListTitle('');
       setIsButtonPressed(false);
-      toast.success('Список успішно створено!');
-    } catch (err) {
-      toast.error('Помилка при створенні списку');
     }
   };
 
   // Видалення списку
   const handleDeleteList = async (id: number): Promise<void> => {
     if (!boardId) return;
-    try {
-      await deleteList(boardId, id);
-      await fetchLists();
-      toast.success('Список успішно видалено!');
-    } catch (error) {
-      toast.error('Помилка при видаленні списку');
-    }
+    await handleRequest(
+      (): Promise<void> => deleteList(boardId, id),
+      'Список успішно видалено!',
+      'Помилка при видаленні списку'
+    );
+    await fetchLists();
   };
 
   // Зміна кольору фону дошки
   const changeBackground = async (newBackground: string): Promise<void> => {
-    try {
-      setBackground(newBackground);
-      await updateBoardBackground(boardId, newBackground);
-      toast.success('Фон дошки успішно змінено!');
-    } catch (error) {
-      toast.error('Помилка при зміні фону дошки');
-    }
+    setBackground(newBackground);
+    await handleRequest(
+      (): Promise<void> => updateBoardBackground(boardId!, newBackground),
+      'Фон дошки успішно змінено!',
+      'Помилка при зміні фону дошки'
+    );
   };
 
   // Вибір фото для фону дошки
@@ -136,12 +140,11 @@ export function Board(): JSX.Element {
     reader.onload = async (): Promise<void> => {
       const newBackground = reader.result as string;
       setBackground(newBackground);
-      try {
-        await updateBoardBackground(boardId, newBackground);
-        toast.success('Фон дошки успішно змінено!');
-      } catch (error) {
-        toast.error('Помилка при зміні фону дошки');
-      }
+      await handleRequest(
+        (): Promise<void> => updateBoardBackground(boardId!, newBackground),
+        'Фон дошки успішно змінено!',
+        'Помилка при зміні фону дошки'
+      );
     };
     reader.readAsDataURL(file);
   };
@@ -186,19 +189,7 @@ export function Board(): JSX.Element {
         </button>
       </div>
 
-      <div
-        className="board__container"
-        style={
-          background.startsWith('data:image')
-            ? {
-                backgroundImage: `url(${background})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }
-            : { backgroundColor: background }
-        }
-      >
+      <div className="board__container" style={getBackgroundStyle(background)}>
         <div className="board__titleContainer">
           {isEditing && (
             <input

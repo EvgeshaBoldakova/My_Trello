@@ -1,11 +1,11 @@
 import React, { JSX, useEffect, useState } from 'react';
 import './home.scss';
-import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { IBoard } from 'common/interfaces/IBoard';
 import { getBoards } from 'services/board.service';
 import { Board } from './components/Board/Board';
 import { CreateBoard } from './components/CreateBoard/CreateBoard';
+import { handleRequest } from '../../utils/handleRequest';
 
 export function Home(): JSX.Element {
   const [boards, setBoards] = useState<IBoard[]>([]);
@@ -16,11 +16,13 @@ export function Home(): JSX.Element {
   };
 
   const fetchBoards = async (): Promise<void> => {
-    try {
-      const data = await getBoards();
-      setBoards(data);
-    } catch (error) {
-      toast.error('Помилка при отриманні даних про дошки');
+    const result = await handleRequest(
+      (): Promise<IBoard[]> => getBoards(),
+      undefined,
+      'Помилка при отриманні даних дошки'
+    );
+    if (result) {
+      setBoards(result);
     }
   };
 
