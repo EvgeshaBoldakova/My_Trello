@@ -1,6 +1,5 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import React, { JSX, useEffect, useRef, useState } from 'react';
-import './board.scss';
 import { IList } from 'common/interfaces/IList';
 import { isValidTitle } from 'utils/validation';
 import { deleteBoard, getBoard, updateBoardBackground, updateBoardTitle } from 'services/board.service';
@@ -8,6 +7,7 @@ import { createList, deleteList, getLists } from 'services/list.service';
 import { handleRequest } from 'utils/handleRequest';
 import { IBoard } from 'common/interfaces/IBoard';
 import { getBackgroundStyle } from 'utils/backgroundStyle';
+import styles from './board.module.scss';
 import { List } from './components/List/List';
 
 export function Board(): JSX.Element {
@@ -150,22 +150,22 @@ export function Board(): JSX.Element {
   };
 
   return (
-    <div className="board">
-      <div className="board__header">
-        <Link to="/" className="board__homeLink">
+    <div className={styles.board}>
+      <div className={styles.board__header}>
+        <Link to="/" className={styles.board__homeLink}>
           ← Додому
         </Link>
-        <div className="board__changeBackground">
-          <div className="board__changeColor">
+        <div className={styles.board__changeBackground}>
+          <div className={styles.board__changeColor}>
             <p>Змінити колір фону</p>
             <input
-              className="board__selectColor"
+              className={styles.board__selectColor}
               type="color"
               value={background}
               onChange={(e) => changeBackground(e.target.value)}
             />
           </div>
-          <div className="board__chooseFoto">
+          <div className={styles.board__chooseFoto}>
             <p>Обрати фото для фону</p>
             <input
               id="background-upload"
@@ -178,24 +178,24 @@ export function Board(): JSX.Element {
                 }
               }}
             />
-            <label htmlFor="background-upload" className="board__selectFoto">
+            <label htmlFor="background-upload" className={styles.board__selectFoto}>
               Обрати фото
             </label>
           </div>
         </div>
 
-        <button onClick={handleDeleteBoard} className="board__deleteBoard">
+        <button onClick={handleDeleteBoard} className={styles.board__deleteBoard}>
           Видалити дошку
         </button>
       </div>
 
-      <div className="board__container" style={getBackgroundStyle(background)}>
-        <div className="board__titleContainer">
+      <div className={styles.board__container} style={getBackgroundStyle(background)}>
+        <div className={styles.board__titleContainer}>
           {isEditing && (
             <input
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
-              className="board__titleEditing"
+              className={styles.board__titleEditing}
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -213,16 +213,16 @@ export function Board(): JSX.Element {
             />
           )}
           {!isEditing && (
-            <h1 className="board__title" onClick={startTitleEditing}>
+            <h1 className={styles.board__title} onClick={startTitleEditing}>
               {title}
             </h1>
           )}
 
-          <div className="board__ID">
+          <div className={styles.board__ID}>
             <h2>Дошка № {boardId}</h2>
           </div>
         </div>
-        <div className="board__lists">
+        <div className={styles.board__lists}>
           {lists.map((list) => (
             <List
               key={list.id}
@@ -234,11 +234,11 @@ export function Board(): JSX.Element {
             />
           ))}
           {isButtonPressed && (
-            <div className="board__addList">
+            <div className={styles.board__addList}>
               <input
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
-                className="board__inputListTitle"
+                className={styles.board__inputListTitle}
                 type="text"
                 placeholder="Введіть назву списку"
                 value={listTitle}
@@ -252,18 +252,18 @@ export function Board(): JSX.Element {
                   }
                 }}
               />
-              <div className="board__addButtonContainer">
-                <button onClick={handleCreateList} className="board__createButton">
+              <div className={styles.board__addButtonContainer}>
+                <button onClick={handleCreateList} className={styles.board__createButton}>
                   Створити
                 </button>
-                <button onClick={stopCreateList} className="board__closeButton">
+                <button onClick={stopCreateList} className={styles.board__closeButton}>
                   ×
                 </button>
               </div>
             </div>
           )}
           {!isButtonPressed && (
-            <button onClick={handleClick} className="board__addListTitle">
+            <button onClick={handleClick} className={styles.board__addListTitle}>
               + Додати список
             </button>
           )}

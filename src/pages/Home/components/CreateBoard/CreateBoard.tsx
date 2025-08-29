@@ -4,6 +4,7 @@ import { isValidTitle } from 'utils/validation';
 import { createBoard } from 'services/board.service';
 import { handleRequest } from 'utils/handleRequest';
 import { IBoard } from 'common/interfaces/IBoard';
+import styles from '../../home.module.scss';
 
 export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps): JSX.Element {
   const [title, setTitle] = useState('');
@@ -29,13 +30,13 @@ export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps):
   };
 
   return (
-    <div className="modalWindow">
-      <div className="modalWindow__content">
-        <h3 className="modalWindow__title">Створити дошку</h3>
+    <div className={styles.modalWindow}>
+      <div className={styles.modalWindow__content}>
+        <h3 className={styles.modalWindow__title}>Створити дошку</h3>
         <input
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
-          className="modalWindow__input"
+          className={styles.modalWindow__input}
           type="text"
           placeholder="Введіть назву дошки"
           value={title}
@@ -50,18 +51,18 @@ export function CreateBoard({ onCardCreated, onCloseModal }: ICreateBoardProps):
           }}
         />
 
-        <p className="modalWindow__choiceColor">Оберіть колір</p>
+        <p className={styles.modalWindow__choiceColor}>Оберіть колір</p>
         <input
-          className="modalWindow__selectColor"
+          className={styles.modalWindow__selectColor}
           type="color"
           value={background}
           onChange={(e) => setBackground(e.target.value)}
         />
-        <div className="modalWindow__buttonContainer">
-          <button className="buttonCreate" onClick={handleCreateBoard}>
+        <div className={styles.modalWindow__buttonContainer}>
+          <button className={styles.buttonCreate} onClick={handleCreateBoard}>
             Створити
           </button>
-          <button className="buttonCLose" onClick={clearAndCloseModalWindow}>
+          <button className={styles.buttonCLose} onClick={clearAndCloseModalWindow}>
             Закрити
           </button>
         </div>

@@ -1,10 +1,10 @@
 import React, { JSX, useRef, useState } from 'react';
-import './list.scss';
 import { ListProps } from 'common/interfaces/IListProps';
 import { useParams } from 'react-router-dom';
 import { isValidTitle } from 'utils/validation';
 import { updateListTitle } from 'services/list.service';
 import { createCard, deleteCard, updateCardTitle } from 'services/card.service';
+import styles from './list.module.scss';
 import { Card } from '../Card/Card';
 import { handleRequest } from '../../../../utils/handleRequest';
 
@@ -88,12 +88,12 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
   };
 
   return (
-    <div className="list">
+    <div className={styles.list}>
       {isEditing && (
         <input
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
-          className="list__titleEditing"
+          className={styles.list__titleEditing}
           type="text"
           value={listTitle}
           onChange={(e) => setListTitle(e.target.value)}
@@ -111,15 +111,15 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
         />
       )}
       {!isEditing && (
-        <h2 className="list__title" onClick={startEditingListTitle}>
+        <h2 className={styles.list__title} onClick={startEditingListTitle}>
           {listTitle}
         </h2>
       )}
 
-      <div className="list__cards">
+      <div className={styles.list__cards}>
         {cards.map((card) => (
-          <div className="list__card" key={card.id}>
-            <div className="list__cardTitle">
+          <div className={styles.list__card} key={card.id}>
+            <div className={styles.list__cardTitle}>
               <Card
                 title={card.title}
                 onEditCard={(newCardTitle: string, description: string) =>
@@ -128,18 +128,18 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
                 description={card.description}
               />
             </div>
-            <button className="list__deleteCard" onClick={() => handleDeleteCard(card.id)}>
+            <button className={styles.list__deleteCard} onClick={() => handleDeleteCard(card.id)}>
               ✕
             </button>
           </div>
         ))}
 
         {isButtonPressed && (
-          <div className="list__addCard">
+          <div className={styles.list__addCard}>
             <input
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
-              className="list__inputCardTitle"
+              className={styles.list__inputCardTitle}
               type="text"
               placeholder="Введіть назву"
               value={cardTitle}
@@ -154,23 +154,23 @@ export function List({ id, title, cards, onDeleteList, onCardCreated }: ListProp
               }}
             />
 
-            <div className="list__addButtonContainer">
-              <button onClick={handleCreateCard} className="list__createButton">
+            <div className={styles.list__addButtonContainer}>
+              <button onClick={handleCreateCard} className={styles.list__createButton}>
                 Створити
               </button>
-              <button onClick={stopAddCard} className="list__closeButton">
+              <button onClick={stopAddCard} className={styles.list__closeButton}>
                 ×
               </button>
             </div>
           </div>
         )}
         {!isButtonPressed && (
-          <button onClick={handleClick} className="list__addCardButton">
+          <button onClick={handleClick} className={styles.list__addCardButton}>
             + Додати картку
           </button>
         )}
 
-        <button onClick={() => onDeleteList(id)} className="list__deleteList">
+        <button onClick={() => onDeleteList(id)} className={styles.list__deleteList}>
           Видалити список
         </button>
       </div>

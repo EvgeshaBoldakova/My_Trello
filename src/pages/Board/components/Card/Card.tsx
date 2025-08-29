@@ -1,7 +1,7 @@
 import React, { JSX, useRef, useState } from 'react';
 import { CardProps } from 'common/interfaces/ICardProps';
-import './card.scss';
 import { isValidTitle } from 'utils/validation';
+import styles from './card.module.scss';
 
 export function Card({ title, description, onEditCard }: CardProps): JSX.Element {
   const [isEditing, setIsEditing] = useState(false);
@@ -26,12 +26,12 @@ export function Card({ title, description, onEditCard }: CardProps): JSX.Element
   };
 
   return (
-    <div className="card">
+    <div className={styles.card}>
       {isEditing && (
         <input
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
-          className="card__titleEditing"
+          className={styles.card__titleEditing}
           value={cardTitle}
           onChange={(e) => setCardTitle(e.target.value)}
           onBlur={editingCardTitle}
@@ -46,7 +46,7 @@ export function Card({ title, description, onEditCard }: CardProps): JSX.Element
         />
       )}
       {!isEditing && (
-        <div className="card-title" onClick={startEditingCardTitle}>
+        <div className={styles.card_title} onClick={startEditingCardTitle}>
           {title}
         </div>
       )}

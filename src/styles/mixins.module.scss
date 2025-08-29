@@ -1,4 +1,4 @@
-@import 'src/styles/variables.scss';
+@import 'variables.module';
 
 @mixin button-style {
   border-radius: var(--border-radius-primary);
